@@ -45,37 +45,31 @@ async function findSteps(scheme_id) {
     
   if(!rows[0].instructions) return []; //returns empty array if there are no steps
   return rows;
-  // EXERCISE C
-  /*
-    1C- Build a query in Knex that returns the following data.
-    The steps should be sorted by step_number, and the array
-    should be empty if there are no steps for the scheme:
-
-      [
-        {
-          "step_id": 5,
-          "step_number": 1,
-          "instructions": "collect all the sheep in Scotland",
-          "scheme_name": "Get Rich Quick"
-        },
-        {
-          "step_id": 4,
-          "step_number": 2,
-          "instructions": "profit",
-          "scheme_name": "Get Rich Quick"
-        }
-      ]
-  */
 }
 
-function add(scheme) { // EXERCISE D
-  /*
-    1D- This function creates a new scheme and resolves to _the newly created scheme_.
-  */
+async function add(scheme) { 
+  await db('schemes').insert(scheme);
+
+  const newScheme = await db('schemes').where('scheme_name', scheme.scheme_name).first();
+
+  return newScheme;
 }
 
-function addStep(scheme_id, step) { // EXERCISE E
+async function addStep(scheme_id, step) { 
+  const newStep = {
+    scheme_id: scheme_id,
+    step_number: step.step_number,
+    instructions: step.instructions
+  }
+  await db('steps').insert(newStep);
+
+  return findSteps(scheme_id);
+
+
+  // EXERCISE E
   /*
+  insert into steps 
+(scheme_id, step_number, instructions) values (9, 1, 'Steal Neptunes crown');
     1E- This function adds a step to the scheme with the given `scheme_id`
     and resolves to _all the steps_ belonging to the given `scheme_id`,
     including the newly created one.
